@@ -1,3 +1,5 @@
+use core::fmt;
+
 use super::{
     buffer::{Buffer, ScreenChar},
     color::{Color, ColorCode},
@@ -23,6 +25,7 @@ impl Writer {
                 let col = self.column_position;
 
                 let color_code = self.color_code;
+
                 self.buffer.write(
                     row,
                     col,
@@ -30,7 +33,7 @@ impl Writer {
                         ascii_character: byte,
                         color_code,
                     },
-                ).unwrap();
+                );
 
                 self.column_position += 1;
             }
@@ -51,14 +54,20 @@ impl Writer {
     }
 }
 
+impl fmt::Write for Writer {
+    fn write_str(&mut self, s: &str) -> fmt::Result {
+        self.write_string(s);
+        Ok(())
+    }
+}
+
 pub fn print_something() {
+    use core::fmt::Write;
     let mut writer = Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::Yellow, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     };
 
-    writer.write_byte(b'H');
-    writer.write_string("ello ");
-    writer.write_string("Wörld");
+    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
 }
