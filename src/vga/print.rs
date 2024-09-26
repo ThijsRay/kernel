@@ -15,11 +15,9 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    {
-        let writer_lock = super::writer::WRITER.lock();
-        let cell = writer_lock.deref().deref();
-        let writer = unsafe { cell.get().as_mut().unwrap() };
+    let writer_lock = super::writer::WRITER.lock();
+    let cell = writer_lock.deref().deref();
+    let writer = unsafe { cell.get().as_mut().unwrap() };
 
-        writer.write_fmt(args).unwrap();
-    }
+    writer.write_fmt(args).unwrap();
 }
