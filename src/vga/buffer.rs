@@ -1,6 +1,3 @@
-use core::error::Error;
-use core::fmt::Display;
-
 use super::color::ColorCode;
 use super::{BUFFER_HEIGHT, BUFFER_WIDTH};
 
@@ -17,12 +14,7 @@ pub(super) struct Buffer {
 }
 
 impl Buffer {
-    pub fn write(
-        &mut self,
-        row: usize,
-        column: usize,
-        char: ScreenChar,
-    ) {
+    pub fn write(&mut self, row: usize, column: usize, char: ScreenChar) {
         let cell = &mut self.chars[row][column];
         let pointer = unsafe { volatile::VolatilePtr::new(cell.into()) };
 
@@ -31,7 +23,7 @@ impl Buffer {
 
     pub fn read(&self, row: usize, column: usize) -> ScreenChar {
         let cell = &self.chars[row][column];
-        let pointer = unsafe { volatile::VolatilePtr::new_read_only(cell.into())};
+        let pointer = unsafe { volatile::VolatilePtr::new_read_only(cell.into()) };
         pointer.read()
     }
 }

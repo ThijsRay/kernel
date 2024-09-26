@@ -1,10 +1,18 @@
-use core::fmt;
+use core::{cell::{LazyCell, UnsafeCell}, fmt};
+
+use spin::Mutex;
 
 use super::{
     buffer::{Buffer, ScreenChar},
     color::{Color, ColorCode},
     BUFFER_HEIGHT, BUFFER_WIDTH,
 };
+
+pub static WRITER: Mutex<LazyCell<UnsafeCell<Writer>>> = Mutex::new(LazyCell::new(|| UnsafeCell::new(Writer {
+    column_position: 0,
+    color_code: ColorCode::new(Color::Yellow, Color::Black),
+    buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+})));
 
 pub struct Writer {
     column_position: usize,
@@ -41,7 +49,26 @@ impl Writer {
     }
 
     fn new_line(&mut self) {
-        unimplemented!();
+        for row in 1..BUFFER_HEIGHT {
+            for column in 0..BUFFER_WIDTH {
+                let character = self.buffer.read(row, column);
+                self.buffer.write(row, column, character);
+            }
+        }
+
+        self.clear_row(BUFFER_HEIGHT - 1);
+        self.column_position = 0;
+    }
+
+    fn clear_row(&mut self, row: usize) {
+        let space = ScreenChar {
+            ascii_character: b' ',
+            color_code: self.color_code,
+        };
+
+        for column in 0..BUFFER_WIDTH {
+            self.buffer.write(row, column, space);
+        }
     }
 
     pub fn write_string(&mut self, s: impl AsRef<str>) {
@@ -59,15 +86,4 @@ impl fmt::Write for Writer {
         self.write_string(s);
         Ok(())
     }
-}
-
-pub fn print_something() {
-    use core::fmt::Write;
-    let mut writer = Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    };
-
-    write!(writer, "The numbers are {} and {}", 42, 1.0/3.0).unwrap();
 }
