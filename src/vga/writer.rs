@@ -1,4 +1,7 @@
-use core::{cell::{LazyCell, UnsafeCell}, fmt};
+use core::{
+    cell::{LazyCell, UnsafeCell},
+    fmt,
+};
 
 use spin::Mutex;
 
@@ -8,11 +11,13 @@ use super::{
     BUFFER_HEIGHT, BUFFER_WIDTH,
 };
 
-pub static WRITER: Mutex<LazyCell<UnsafeCell<Writer>>> = Mutex::new(LazyCell::new(|| UnsafeCell::new(Writer {
-    column_position: 0,
-    color_code: ColorCode::new(Color::Yellow, Color::Black),
-    buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-})));
+pub static WRITER: Mutex<LazyCell<UnsafeCell<Writer>>> = Mutex::new(LazyCell::new(|| {
+    UnsafeCell::new(Writer {
+        column_position: 0,
+        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
+    })
+}));
 
 pub struct Writer {
     column_position: usize,
@@ -52,7 +57,7 @@ impl Writer {
         for row in 1..BUFFER_HEIGHT {
             for column in 0..BUFFER_WIDTH {
                 let character = self.buffer.read(row, column);
-                self.buffer.write(row, column, character);
+                self.buffer.write(row - 1, column, character);
             }
         }
 

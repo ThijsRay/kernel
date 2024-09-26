@@ -6,8 +6,16 @@ build:
 
 .PHONY: run
 run: build
-	qemu-system-x86_64 -drive format=raw,file=target/x86_64/debug/bootimage-kernel.bin
+	qemu-system-x86_64 -drive format=raw,file=target/$(ARCH)/debug/bootimage-kernel.bin
+
+.PHONY: debug
+debug: build
+	qemu-system-x86_64 -s -S -drive format=raw,file=target/$(ARCH)/debug/bootimage-kernel.bin
 
 .PHONY: clean
 clean:
 	cargo clean
+
+.PHONY: gdb
+gdb: build
+	gdb -ex "target remote localhost:1234" target/$(ARCH)/debug/kernel
