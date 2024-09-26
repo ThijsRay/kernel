@@ -1,3 +1,3 @@
 mod exit;
 
-pub use exit::{QemuExitCode, exit};
+pub use exit::{exit, QemuExitCode};

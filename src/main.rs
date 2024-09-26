@@ -1,14 +1,15 @@
 #![no_std]
 #![no_main]
-
 #![feature(custom_test_frameworks)]
 #![test_runner(test::runner)]
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
 
-mod vga;
 mod qemu;
+mod serial;
+mod tty;
+mod vga;
 
 #[cfg(test)]
 mod test;
@@ -31,8 +32,6 @@ fn panic(info: &PanicInfo) -> ! {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test_case]
     fn exploration() {
         let result = 2 + 2;

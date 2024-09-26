@@ -1,9 +1,11 @@
 use core::fmt;
-use core::ops::Deref;
+
+use crate::serial::SERIAL1;
+use crate::vga::VGA_WRITER;
 
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::tty::_print(format_args!($($arg)*)));
 }
 
 #[macro_export]
@@ -15,9 +17,8 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    let writer_lock = super::writer::WRITER.lock();
-    let cell = writer_lock.deref().deref();
-    let writer = unsafe { cell.get().as_mut().unwrap() };
-
-    writer.write_fmt(args).unwrap();
+    unsafe {
+        SERIAL1.write_fmt(args);
+        VGA_WRITER.write_fmt(args);
+    }
 }

@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(PartialEq, Eq)]
 #[repr(u32)]
 pub enum QemuExitCode {
     Success = 0x10,

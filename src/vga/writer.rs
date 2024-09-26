@@ -1,9 +1,8 @@
-use core::{
-    cell::{LazyCell, UnsafeCell},
-    fmt,
-};
+use core::fmt;
 
-use spin::Mutex;
+use spin::{Lazy, Mutex};
+
+use crate::tty::Tty;
 
 use super::{
     buffer::{Buffer, ScreenChar},
@@ -11,12 +10,10 @@ use super::{
     BUFFER_HEIGHT, BUFFER_WIDTH,
 };
 
-pub static WRITER: Mutex<LazyCell<UnsafeCell<Writer>>> = Mutex::new(LazyCell::new(|| {
-    UnsafeCell::new(Writer {
-        column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
-        buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
-    })
+pub static mut VGA_WRITER: Mutex<Lazy<Writer>> = Mutex::new(Lazy::new(|| Writer {
+    column_position: 0,
+    color_code: ColorCode::new(Color::Yellow, Color::Black),
+    buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
 }));
 
 pub struct Writer {
@@ -90,5 +87,18 @@ impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
         Ok(())
+    }
+}
+
+impl Tty for Writer {
+    fn read<A: AsMut<[u8]>>(&self, buf: A) -> usize {
+        todo!()
+    }
+
+    fn write<A: AsRef<[u8]>>(&mut self, bytes: A) -> usize {
+        for byte in bytes.as_ref().into_iter() {
+            self.write_byte(*byte)
+        }
+        bytes.as_ref().len()
     }
 }
