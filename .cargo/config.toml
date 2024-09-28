@@ -1,5 +1,5 @@
 [build]
-target = "arch/x86_64.json"
+target = "arch/x86_64/target.json"
 
 [unstable]
 build-std-features = ["compiler-builtins-mem"]
