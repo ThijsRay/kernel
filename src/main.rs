@@ -1,6 +1,9 @@
 #![no_std]
 #![no_main]
 
+mod arch;
+mod boot;
+
 use core::panic::PanicInfo;
 
 #[no_mangle]
