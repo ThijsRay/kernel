@@ -1,4 +1,4 @@
-use core::fmt;
+use core::fmt::{self, Write};
 
 use crate::serial::SERIAL1;
 use crate::vga::VGA_WRITER;
@@ -16,9 +16,11 @@ macro_rules! println {
 
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
-    use core::fmt::Write;
+    use super::tty::TtyWriter;
+        // &SERIAL1.write_fmt(args).unwrap();
     unsafe {
-        SERIAL1.write_fmt(args);
-        VGA_WRITER.write_fmt(args);
+    TtyWriter(&VGA_WRITER).write_fmt(args).unwrap();
+    TtyWriter(&SERIAL1).write_fmt(args).unwrap();
     }
+        // (&VGA_WRITER).write_fmt(args).unwrap();
 }
