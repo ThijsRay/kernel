@@ -1,16 +1,12 @@
-ARCH := x86_64
-
 .PHONY: build
 build:
-	cargo build
-
-.PHONY: run
-run:
-	cargo run
+	cd boot && cargo build
+	cd kernel && cargo build
 
 .PHONY: clean
 clean:
-	cargo clean
+	cd boot && cargo clean
+	cd kernel && cargo clean
 
 .PHONY: gdb
 gdb:
