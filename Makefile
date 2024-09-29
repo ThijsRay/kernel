@@ -18,7 +18,7 @@ build: build-boot build-kernel
 
 build-boot:
 	echo -n 'pub(crate) const KERNEL_LOCATION: &str = "$(KERNEL_LOCATION)";' > boot/src/location.rs
-	cd boot && cargo build $(COMPILATION_OPTIONS)
+	cd boot && cargo build --target "$(ARCH)-unknown-uefi" $(COMPILATION_OPTIONS)
 
 build-%:
 	cd $* && cargo build $(COMPILATION_OPTIONS)

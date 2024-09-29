@@ -1,1 +1,1 @@
-pub(crate) const KERNEL_LOCATION: &str = "/efi/boot/hello";
+pub(crate) const KERNEL_LOCATION: &str = "/efi/boot/kernel.elf";
