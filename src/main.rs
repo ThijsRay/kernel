@@ -2,16 +2,17 @@
 #![no_main]
 
 mod arch;
-mod boot;
 
-use core::panic::PanicInfo;
+use core::{arch::asm, panic::PanicInfo};
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+pub fn main() {
+    unsafe {
+        asm!("int3");
+    }
     loop {}
 }
 
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
+fn panic(_info: &PanicInfo) -> ! {
     loop {}
 }

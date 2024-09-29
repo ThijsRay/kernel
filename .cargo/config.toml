@@ -1,5 +1,8 @@
 [build]
-target = "src/arch/x86_64/target.json"
+target = "x86_64-unknown-uefi"
+
+[target.x86_64-unknown-uefi]
+runner = ".cargo/runners/x86_64-unknown-uefi.sh"
 
 [unstable]
 build-std-features = ["compiler-builtins-mem"]

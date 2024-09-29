@@ -1,5 +1,10 @@
-use crate::boot::multiboot::Header;
+use core::arch::asm;
 
-#[link_section = ".text.multiboot"]
+use crate::main;
+
 #[no_mangle]
-static MULTIBOOT_HEADER: Header<0> = Header::new(0, []);
+pub extern "C" fn efi_main(_h: *mut ::core::ffi::c_void, _st: *mut core::ffi::c_void) -> usize {
+    unsafe { asm!("int3"); }
+    main();
+    0
+}
