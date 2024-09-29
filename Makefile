@@ -6,6 +6,9 @@ OVMF=/usr/share/OVMF/x64/OVMF.fd
 VERSION := debug
 COMPILATION_OPTIONS :=
 
+LOADER_LOCATION=/efi/boot/$(EFI_NAME)
+KERNEL_LOCATION=/efi/boot/kernel.elf
+
 ifeq "$(VERSION)" "release"
 	COMPILATION_OPTIONS += --release
 endif
@@ -13,8 +16,17 @@ endif
 .PHONY: build
 build: build-boot build-kernel
 
+build-boot:
+	echo -n 'pub(crate) const KERNEL_LOCATION: &str = "$(KERNEL_LOCATION)";' > boot/src/location.rs
+	cd boot && cargo build $(COMPILATION_OPTIONS)
+
 build-%:
 	cd $* && cargo build $(COMPILATION_OPTIONS)
+
+.PHONY: fmt
+fmt: fmt-boot fmt-kernel
+fmt-%:
+	cd $* && cargo fmt
 
 .PHONY: clean
 clean:
@@ -22,8 +34,8 @@ clean:
 
 efi: build
 	mkdir -p target/esp/efi/boot
-	cp target/$(ARCH)-unknown-uefi/$(VERSION)/boot.efi target/esp/efi/boot/$(EFI_NAME)
-	cp target/$(ARCH)/$(VERSION)/kernel target/esp/efi/boot/kernel.elf
+	cp target/$(ARCH)-unknown-uefi/$(VERSION)/boot.efi target/esp$(LOADER_LOCATION)
+	cp target/$(ARCH)/$(VERSION)/kernel target/esp$(KERNEL_LOCATION)
 
 .PHONY: run
 run: efi
