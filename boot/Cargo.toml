@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 uefi = { version = "0.32.0", features = ["alloc", "global_allocator", "logger", "panic_handler"]}
+elf = { version = "0.7.4", default-features = false }

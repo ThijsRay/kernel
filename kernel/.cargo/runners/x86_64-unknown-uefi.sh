@@ -10,8 +10,6 @@ OVMF_CODE="/usr/share/OVMF/x64/OVMF_CODE.fd"
 OVMF_VARS="/usr/share/OVMF/x64/OVMF_VARS.fd"
 QEMU="$(which qemu-system-x86_64)"
 
-
-
 qemu_args=(
   # Open a gdbserver on TCP port 1234
   -s
